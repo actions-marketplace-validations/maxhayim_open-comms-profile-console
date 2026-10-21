@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Usage: node src/cli.mjs <github_user> <output.svg[?titles=false&email=false&visitor_log=false]> [more outputs...]
+// Usage: node src/cli.mjs <github_user> <output.svg[?titles=false&email=false&visitor_log=false&part=radio|status]> [more outputs...]
 // Reads GITHUB_TOKEN and these from the environment:
 //   OPEN_COMMS_EMAIL (empty or false for a receive-only radio), OPEN_COMMS_STATUS, OPEN_COMMS_GITHUB_STATUS (true/false),
 //   OPEN_COMMS_FREQUENCY, OPEN_COMMS_VISITOR_PAGE_ID, OPEN_COMMS_VISITOR_LOG (true/false), OPEN_COMMS_TITLES (true/false).
@@ -12,7 +12,7 @@ import { buildSvg } from "./render.mjs";
 const [user, ...rest] = process.argv.slice(2);
 const outputs = rest.flatMap((a) => a.split("\n")).map((a) => a.trim()).filter(Boolean);
 if (!user || !outputs.length) {
-  console.error("Usage: node src/cli.mjs <github_user> <output.svg[?titles=false&email=false&visitor_log=false]> [more outputs...]");
+  console.error("Usage: node src/cli.mjs <github_user> <output.svg[?titles=false&email=false&visitor_log=false&part=radio|status]> [more outputs...]");
   process.exit(1);
 }
 
@@ -50,8 +50,13 @@ for (const out of outputs) {
   const q = new URLSearchParams(query);
   const flag = (key, envKey) => !off((q.get(key) || env(envKey) || "true").trim());
   const titles = flag("titles", "OPEN_COMMS_TITLES"), withEmail = !off((q.get("email") || "true").trim()), visitorLog = flag("visitor_log", "OPEN_COMMS_VISITOR_LOG");
+  const part = (q.get("part") || "all").trim().toLowerCase();
+  if (!["all", "radio", "status"].includes(part)) {
+    console.error(`Error: ${file}: part must be radio or status, not "${part}"`);
+    process.exit(1);
+  }
   fs.mkdirSync(path.dirname(path.resolve(file)), { recursive: true });
-  fs.writeFileSync(file, buildSvg(profile, { titles, email: withEmail, visitorLog }));
-  const notes = [!titles && "no titles", !(withEmail && profile.email) && "receive only", !(visitorLog && "visitors" in profile) && "no visitor log"].filter(Boolean);
+  fs.writeFileSync(file, buildSvg(profile, { titles, email: withEmail, visitorLog, part }));
+  const notes = [part !== "all" && `${part} only`, !titles && "no titles", !(withEmail && profile.email) && "receive only", !(visitorLog && "visitors" in profile) && "no visitor log"].filter(Boolean);
   console.log(`wrote ${file}${notes.length ? ` (${notes.join(", ")})` : ""}`);
 }

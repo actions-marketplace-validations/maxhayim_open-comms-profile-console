@@ -32,7 +32,7 @@ inputs:
   visitor_page_id:
     description: |
       Optional visitor-badge.laobi.icu page_id (for example "you.you"). Adds a VISITOR LOG readout with the count when the image was drawn.
-      Reading it doesn't add a visit; keep the live badge in your README to count visits.
+      Reading it doesn't add a visit; keep a visitor-badge image in your README (a hidden 1x1 pixel works) to count visits.
     required: false
     default: ""
   visitor_log:
@@ -42,6 +42,8 @@ inputs:
   outputs:
     description: |
       One output file per line. Add ?titles=false, ?email=false or ?visitor_log=false to change that file (join them with &).
+      Add ?part=radio or ?part=status to draw only the comms panel or only the message panel and lamp strip, so the two
+      can be stacked in your README with a different link each.
       Example: dist/open-comms.svg?titles=false
     required: false
     default: dist/open-comms.svg

@@ -30,8 +30,9 @@
   <li><strong>Your own status line:</strong> any message on the status display through the <code>status</code> input, with a blinking cursor and a GO lamp</li>
   <li><strong>Synced with GitHub:</strong> set <code>github_status: true</code> and the display shows the status you set on your GitHub profile; mark yourself busy and the lamp turns to amber BUSY</li>
   <li><strong>Clickable:</strong> wrap the image in a <code>mailto:</code> link and the push-to-talk plate tells visitors to click to transmit; the SVG has the same link built in for when it's opened on its own</li>
+  <li><strong>Two links:</strong> split it into the radio and the message panel with <code>?part=</code>, so the email opens a new message and the rest links to your project page</li>
   <li><strong>Everything optional:</strong> turn off the email for a receive-only radio, or the visitor log, for the whole run or one output</li>
-  <li><strong>Visitor log:</strong> an optional odometer of your visitor count inside the panel, plus a live badge recipe in the same cockpit green to go under it (see <a href="#visitor-counter">Visitor Counter</a>)</li>
+  <li><strong>Visitor log:</strong> an optional odometer of your visitor count inside the panel, counted by a hidden 1×1 pixel in your README (see <a href="#visitor-counter">Visitor Counter</a>)</li>
   <li><strong>Optional titles:</strong> hide the header and panel titles with <code>titles: false</code> when your README has its own heading (see the <a href="#gallery">Gallery</a>)</li>
   <li><strong>Zero dependencies:</strong> plain Node.js, nothing to install</li>
   <li>Works with the built-in <code>GITHUB_TOKEN</code></li>
@@ -127,6 +128,27 @@
 
    With no email, leave out the `<a>` link and use the `<img>` on its own.
 
+   To have the email open a new message and the rest of the panel link somewhere else (your project, this repo), see [Two Links](#two-links).
+
+<h2 id="two-links">Two Links</h2>
+
+<p>A README image can carry only one link. To give the email its own link, draw the panel as two images and stack them: <code>?part=radio</code> draws the header and comms panel, <code>?part=status</code> draws the message panel and lamp strip. The corners where they meet are square, so they read as one console.</p>
+
+<p align="center"><img src="examples/open-comms-radio.svg" alt="Open Comms radio part" width="100%"/><br><img src="examples/open-comms-status.svg" alt="Open Comms status part" width="100%"/></p>
+
+```yaml
+outputs: |
+  dist/open-comms-radio.svg?part=radio&titles=false
+  dist/open-comms-status.svg?part=status&titles=false
+```
+
+```html
+<p align="center">
+  <a href="mailto:you@example.com"><img src="https://raw.githubusercontent.com/<you>/<you>/output/open-comms-radio.svg" alt="Open Comms: email me" width="100%"></a><br>
+  <a href="https://github.com/maxhayim/open-comms"><img src="https://raw.githubusercontent.com/<you>/<you>/output/open-comms-status.svg" alt="Open Comms status" width="100%"></a>
+</p>
+```
+
 <h2 id="status-message">Status Message</h2>
 
 <p>The message display shows <code>status</code>, which defaults to <code>SYSTEMS NOMINAL · READY FOR NEXT MISSION</code>. Change it in your workflow and it updates on the next run.</p>
@@ -137,7 +159,15 @@
 
 <p>Set <code>visitor_page_id</code> and the message panel gets a <code>VISITOR LOG</code> odometer, read from <a href="https://github.com/jwenjian/visitor-badge">visitor-badge</a> each time the workflow runs. Reading it doesn't add a visit. If the badge service doesn't answer, the odometer shows dashes and the run carries on.</p>
 
-<p>The SVG is only redrawn when the workflow runs, so its number is a snapshot, and an image in a README can't fetch anything live. The badge is also what records each visit, so keep a live badge under the image. Run the workflow hourly (<code>cron: "0 * * * *"</code>) to keep the odometer close to the badge. visitor-badge takes <code>left_text</code>, <code>left_color</code> and <code>right_color</code> (its text is always white), so dark cockpit greens match the panel:</p>
+<p>The odometer can't count visits on its own: GitHub serves the SVG from a cache, so it never sees who views your profile. A visitor-badge image in your README records each visit. Make it a hidden 1×1 pixel so the odometer is the only counter on the page, and use the same <code>page_id</code> as <code>visitor_page_id</code>:</p>
+
+```html
+<img src="https://visitor-badge.laobi.icu/badge?page_id=<you>.<you>" width="1" height="1" alt="">
+```
+
+<p>The odometer shows the count from the last run, so run the workflow often. Every 5 minutes is the fastest GitHub allows (<code>cron: "*/5 * * * *"</code>); add GitHub's own image caching and the number on your profile is usually 5 to 15 minutes behind. Workflows are free for public repositories, but scheduled runs can be delayed when GitHub is busy.</p>
+
+<p>If you'd rather show the exact live count as well, use a visible badge instead of the pixel. visitor-badge takes <code>left_text</code>, <code>left_color</code> and <code>right_color</code> (its text is always white), so dark cockpit greens match the panel:</p>
 
 ```html
 <p align="center">
@@ -145,7 +175,7 @@
 </p>
 ```
 
-<p>Use the same <code>page_id</code> for the badge and for <code>visitor_page_id</code>. If you already have a badge, keep its <code>page_id</code> and only change the colour and label options; the count carries on. The badge service can be slow to respond, so the badge sometimes loads after the rest of the page.</p>
+<p>If you already have a badge, keep its <code>page_id</code>; the count carries on. The badge service can be slow to respond, so a visible badge sometimes loads after the rest of the page.</p>
 
 <h2>Usage</h2>
 
@@ -160,7 +190,7 @@
   <tr><td><code>frequency</code></td><td><code>122.800</code></td><td>Active frequency on the COM 1 readout, in MHz.</td></tr>
   <tr><td><code>visitor_page_id</code></td><td>(none)</td><td>visitor-badge <code>page_id</code>. Adds a <code>VISITOR LOG</code> odometer with the count when the image was drawn.</td></tr>
   <tr><td><code>visitor_log</code></td><td><code>true</code></td><td>Set to <code>false</code> to hide the visitor log even when <code>visitor_page_id</code> is set.</td></tr>
-  <tr><td><code>outputs</code></td><td><code>dist/open-comms.svg</code></td><td>One file per line. Add <code>?titles=false</code>, <code>?email=false</code> or <code>?visitor_log=false</code> to change that file; join them with <code>&amp;</code>.</td></tr>
+  <tr><td><code>outputs</code></td><td><code>dist/open-comms.svg</code></td><td>One file per line. Add <code>?titles=false</code>, <code>?email=false</code>, <code>?visitor_log=false</code> or <code>?part=radio</code> / <code>?part=status</code> to change that file; join them with <code>&amp;</code>.</td></tr>
   <tr><td><code>titles</code></td><td><code>true</code></td><td>Set to <code>false</code> to hide the header (title, callsign, name) and the panel titles.</td></tr>
   <tr><td><code>github_token</code></td><td><code>github.token</code></td><td>Token used to read your name and status from the GitHub API.</td></tr>
 </table>
@@ -193,7 +223,7 @@ OPEN_COMMS_STATUS='ON LEAVE · BACK MONDAY' OPEN_COMMS_FREQUENCY=121.5 node src/
 <ul>
   <li><strong>Dark theme only.</strong> The cockpit look is designed for dark backgrounds.</li>
   <li><strong>Not clickable on its own.</strong> Links inside an SVG don't work through <code>&lt;img&gt;</code>; wrap the image in a <code>mailto:</code> link.</li>
-  <li><strong>The visitor log is a snapshot.</strong> It shows the count when the workflow last ran; the live badge shows the exact count.</li>
+  <li><strong>The visitor log is a snapshot.</strong> It shows the count when the workflow last ran, so even every 5 minutes it's a few minutes behind.</li>
   <li><strong>The GitHub status is a snapshot too.</strong> A status you set shows up on the next run, and reading it needs a token (the built-in one works).</li>
   <li><strong>Long text.</strong> Long emails and status lines are shrunk to fit; a status line of more than about 60 characters gets hard to read.</li>
   <li><strong>The animation plays on load.</strong> The tune-in and typing play once each time the image loads; the scope, lamps and cursor keep running.</li>
