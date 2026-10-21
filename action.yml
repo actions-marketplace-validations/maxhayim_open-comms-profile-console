@@ -1,0 +1,75 @@
+name: Open Comms
+description: Turn your contact email into an animated cockpit comms-radio SVG, with a status message, for your profile README.
+author: maxhayim
+branding:
+  icon: radio
+  color: green
+
+inputs:
+  github_user_name:
+    description: GitHub user whose callsign and name go in the header.
+    required: true
+  email:
+    description: |
+      Email address shown on the station display. Wrap the image in a mailto: link in your README so it can be clicked.
+      Leave it empty or set it to false for a receive-only radio with no email.
+    required: false
+    default: ""
+  status:
+    description: Message shown on the status display.
+    required: false
+    default: SYSTEMS NOMINAL · READY FOR NEXT MISSION
+  github_status:
+    description: |
+      Set to true to show your GitHub profile status instead of `status` when you have one set ("Busy" turns the status lamp amber).
+      Change it on github.com and it shows up on the next run.
+    required: false
+    default: "false"
+  frequency:
+    description: Active frequency on the COM 1 readout, in MHz.
+    required: false
+    default: "122.800"
+  visitor_page_id:
+    description: |
+      Optional visitor-badge.laobi.icu page_id (for example "you.you"). Adds a VISITOR LOG readout with the count when the image was drawn.
+      Reading it doesn't add a visit; keep the live badge in your README to count visits.
+    required: false
+    default: ""
+  visitor_log:
+    description: Set to false to hide the visitor log even when visitor_page_id is set, for outputs that don't set ?visitor_log=.
+    required: false
+    default: "true"
+  outputs:
+    description: |
+      One output file per line. Add ?titles=false, ?email=false or ?visitor_log=false to change that file (join them with &).
+      Example: dist/open-comms.svg?titles=false
+    required: false
+    default: dist/open-comms.svg
+  titles:
+    description: Set to false to hide the header (title, callsign and name) and the panel titles, for outputs that don't set ?titles=.
+    required: false
+    default: "true"
+  github_token:
+    description: Token used to read your name and status from the GitHub API.
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        OPEN_COMMS_TITLES: ${{ inputs.titles }}
+        OPEN_COMMS_EMAIL: ${{ inputs.email }}
+        OPEN_COMMS_STATUS: ${{ inputs.status }}
+        OPEN_COMMS_GITHUB_STATUS: ${{ inputs.github_status }}
+        OPEN_COMMS_FREQUENCY: ${{ inputs.frequency }}
+        OPEN_COMMS_VISITOR_PAGE_ID: ${{ inputs.visitor_page_id }}
+        OPEN_COMMS_VISITOR_LOG: ${{ inputs.visitor_log }}
+        OC_USER: ${{ inputs.github_user_name }}
+        OC_OUTPUTS: ${{ inputs.outputs }}
+      run: node "${{ github.action_path }}/src/cli.mjs" "$OC_USER" "$OC_OUTPUTS"
