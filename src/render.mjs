@@ -222,7 +222,7 @@ export function buildSvg(profile, { titles = true, email = true, visitorLog = tr
   ].join("\n");
   const seam = part === "radio" ? `<rect y="${H - 10}" width="${W}" height="10" fill="${T.bg}"/>` : part === "status" ? `<rect width="${W}" height="10" fill="${T.bg}"/>` : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${FONT}">
-<title>Open Comms: ${esc(stat && !radio ? s.status : s.email || s.login)}</title>
+<title>Open Comms Radio: ${esc(stat && !radio ? s.status : s.email || s.login)}</title>
 <defs><filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
 <rect width="${W}" height="${H}" rx="10" fill="${T.bg}"/>${seam}
 ${header}

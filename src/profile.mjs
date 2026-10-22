@@ -8,7 +8,7 @@ const QUERY = `query($login: String!) {
 async function graphql(login, token) {
   const res = await fetch("https://api.github.com/graphql", {
     method: "POST",
-    headers: { "User-Agent": "open-comms", Authorization: `bearer ${token}`, "Content-Type": "application/json" },
+    headers: { "User-Agent": "open-comms-radio", Authorization: `bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({ query: QUERY, variables: { login } }),
   });
   if (!res.ok) throw new Error(`GitHub GraphQL ${res.status}`);
@@ -19,7 +19,7 @@ async function graphql(login, token) {
 
 // The REST API has no status, so it's only the fallback when there's no token.
 async function rest(login) {
-  const res = await fetch(`https://api.github.com/users/${encodeURIComponent(login)}`, { headers: { "User-Agent": "open-comms", Accept: "application/vnd.github+json" } });
+  const res = await fetch(`https://api.github.com/users/${encodeURIComponent(login)}`, { headers: { "User-Agent": "open-comms-radio", Accept: "application/vnd.github+json" } });
   if (!res.ok) throw new Error(`GitHub API ${res.status}`);
   return res.json();
 }
@@ -62,7 +62,7 @@ export async function getVisitors(pageId) {
   const url = `https://visitor-badge.laobi.icu/badge?page_id=${encodeURIComponent(pageId)}&query_only=true`;
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      const res = await fetch(url, { headers: { "User-Agent": "open-comms" }, signal: AbortSignal.timeout(20000) });
+      const res = await fetch(url, { headers: { "User-Agent": "open-comms-radio" }, signal: AbortSignal.timeout(20000) });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const texts = [...(await res.text()).matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1].trim());
       const n = Number(texts.at(-1));
