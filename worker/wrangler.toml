@@ -1,0 +1,15 @@
+# Live VISITOR LOG strip for Open Comms Profile Console.
+# 1. npx wrangler kv namespace create open-comms-visitor-log   (prints an id)
+# 2. Put that id below, and optionally an existing visitor-badge page_id in SEED_PAGE_ID.
+# 3. npx wrangler deploy --config worker/wrangler.toml
+name = "open-comms-visitor-log"
+main = "index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# An existing visitor-badge.laobi.icu page_id to start the count from (read once, when the counter is empty). Leave empty to start at 0.
+SEED_PAGE_ID = ""
+
+[[kv_namespaces]]
+binding = "COUNTER"
+id = "PASTE_YOUR_KV_NAMESPACE_ID"

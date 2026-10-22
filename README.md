@@ -32,7 +32,7 @@
   <li><strong>Clickable:</strong> wrap the image in a <code>mailto:</code> link and the push-to-talk plate tells visitors to click to transmit; the SVG has the same link built in for when it's opened on its own</li>
   <li><strong>Two links:</strong> split it into the comms panel and the message panel with <code>?part=</code>, so the email opens a new message and the rest links to your project page</li>
   <li><strong>Everything optional:</strong> turn off the email for a receive-only panel, or the visitor log, for the whole run or one output</li>
-  <li><strong>Visitor log:</strong> an optional odometer of your visitor count inside the panel, counted by a hidden 1×1 pixel in your README (see <a href="#visitor-counter">Visitor Counter</a>)</li>
+  <li><strong>Live visitor log:</strong> an optional strip that counts and redraws on every view from a free Cloudflare Worker, or a snapshot odometer inside the panel (see <a href="#visitor-counter">Visitor Counter</a>)</li>
   <li><strong>Optional titles:</strong> hide the header and panel titles with <code>titles: false</code> when your README has its own heading (see the <a href="#gallery">Gallery</a>)</li>
   <li><strong>Zero dependencies:</strong> plain Node.js, nothing to install</li>
   <li>Works with the built-in <code>GITHUB_TOKEN</code></li>
@@ -157,25 +157,43 @@ outputs: |
 
 <h2 id="visitor-counter">Visitor Counter</h2>
 
-<p>Set <code>visitor_page_id</code> and the message panel gets a <code>VISITOR LOG</code> odometer, read from <a href="https://github.com/jwenjian/visitor-badge">visitor-badge</a> each time the workflow runs. Reading it doesn't add a visit. If the badge service doesn't answer, the odometer shows dashes and the run carries on.</p>
+<p>The panel is an image that GitHub caches, so it never sees who views your profile and a number drawn inside it can only change when the workflow runs. There are two ways to show a visitor count:</p>
 
-<p>The odometer can't count visits on its own: GitHub serves the SVG from a cache, so it never sees who views your profile. A visitor-badge image in your README records each visit. Make it a hidden 1×1 pixel so the odometer is the only counter on the page, and use the same <code>page_id</code> as <code>visitor_page_id</code>:</p>
+<h3 id="live-visitor-log">Live: a strip that changes on every refresh</h3>
+
+<p>A tiny <a href="https://workers.cloudflare.com">Cloudflare Worker</a> in <code>worker/</code> counts each visit and draws a fresh <code>LIVE · VISITOR LOG</code> strip for every view, with the digits that changed rolling up. It tells GitHub not to cache it, so GitHub fetches it again on each page view. Stack it between the two parts from <a href="#two-links">Two Links</a> and it reads as part of the console:</p>
+
+<p align="center"><img src="examples/open-comms-contact.svg" alt="Open Comms Profile Console: comms panel" width="100%"/><br><img src="examples/visitor-log.svg" alt="Live visitor log strip" width="100%"/><br><img src="examples/open-comms-status.svg" alt="Open Comms Profile Console: message panel" width="100%"/></p>
+
+<p>It runs on Cloudflare's free plan (Workers and Workers KV, no card needed). To deploy your own:</p>
+
+<pre><code>npx wrangler login
+npx wrangler kv namespace create open-comms-visitor-log
+# put the printed id in worker/wrangler.toml (and an existing visitor-badge page_id in SEED_PAGE_ID to carry on that count)
+npx wrangler deploy --config worker/wrangler.toml</code></pre>
+
+<p>Then add the strip between the two parts in your README, and leave <code>visitor_page_id</code> out of the workflow so the message panel doesn't show a second count:</p>
+
+```html
+<img src="https://open-comms-visitor-log.<your-subdomain>.workers.dev/visitor-log.svg" alt="Visitor log" width="100%"><br>
+```
+
+<ul>
+  <li>Add <code>?peek</code> to the URL to see the count without adding a visit.</li>
+  <li>If the counter can't be read, the strip shows dashes and <code>COUNTER OFFLINE</code> instead of breaking.</li>
+  <li>The free plan allows 1,000 saved counts a day; views past that still show the strip but aren't added.</li>
+  <li>Every load counts, including your own and repeat views, like visitor-badge.</li>
+</ul>
+
+<h3 id="snapshot-visitor-log">Snapshot: a number inside the panel</h3>
+
+<p>Set <code>visitor_page_id</code> and the message panel gets a <code>VISITOR LOG</code> odometer, read from <a href="https://github.com/jwenjian/visitor-badge">visitor-badge</a> each time the workflow runs, without adding a visit. If the badge service doesn't answer, the odometer shows dashes and the run carries on. A visitor-badge image in your README does the counting; a hidden 1×1 pixel keeps it the only counter on the page:</p>
 
 ```html
 <img src="https://visitor-badge.laobi.icu/badge?page_id=<you>.<you>" width="1" height="1" alt="">
 ```
 
-<p>The odometer shows the count from the last run, so run the workflow often. Every 5 minutes is the fastest GitHub allows (<code>cron: "*/5 * * * *"</code>); add GitHub's own image caching and the number on your profile is usually 5 to 15 minutes behind. Workflows are free for public repositories, but scheduled runs can be delayed when GitHub is busy.</p>
-
-<p>If you'd rather show the exact live count as well, use a visible badge instead of the pixel. visitor-badge takes <code>left_text</code>, <code>left_color</code> and <code>right_color</code> (its text is always white), so dark cockpit greens match the panel:</p>
-
-```html
-<p align="center">
-  <img src="https://visitor-badge.laobi.icu/badge?page_id=<you>.<you>&left_text=VISITOR%20LOG&left_color=%2303140b&right_color=%231c8443" alt="Visitor counter">
-</p>
-```
-
-<p>If you already have a badge, keep its <code>page_id</code>; the count carries on. The badge service can be slow to respond, so a visible badge sometimes loads after the rest of the page.</p>
+<p>The number is only as fresh as the last run: every 5 minutes is the fastest GitHub allows (<code>cron: "*/5 * * * *"</code>), and with GitHub's image caching it's usually 5 to 15 minutes behind. For a visible badge instead, visitor-badge takes <code>left_text</code>, <code>left_color</code> and <code>right_color</code> (its text is always white): <code>left_text=VISITOR%20LOG&amp;left_color=%2303140b&amp;right_color=%231c8443</code>.</p>
 
 <h2>Usage</h2>
 
@@ -223,7 +241,7 @@ OPEN_COMMS_STATUS='ON LEAVE · BACK MONDAY' OPEN_COMMS_FREQUENCY=121.5 node src/
 <ul>
   <li><strong>Dark theme only.</strong> The cockpit look is designed for dark backgrounds.</li>
   <li><strong>Not clickable on its own.</strong> Links inside an SVG don't work through <code>&lt;img&gt;</code>; wrap the image in a <code>mailto:</code> link.</li>
-  <li><strong>The visitor log is a snapshot.</strong> It shows the count when the workflow last ran, so even every 5 minutes it's a few minutes behind.</li>
+  <li><strong>The in-panel visitor log is a snapshot.</strong> It shows the count when the workflow last ran; use the <a href="#live-visitor-log">live strip</a> for a count that changes on every refresh.</li>
   <li><strong>The GitHub status is a snapshot too.</strong> A status you set shows up on the next run, and reading it needs a token (the built-in one works).</li>
   <li><strong>Long text.</strong> Long emails and status lines are shrunk to fit; a status line of more than about 60 characters gets hard to read.</li>
   <li><strong>The animation plays on load.</strong> The tune-in and typing play once each time the image loads; the scope, lamps and cursor keep running.</li>
@@ -247,7 +265,7 @@ Full license text: https://opensource.org/licenses/MIT
   <li><a href="https://github.com/maxhayim/flight-path-radar">maxhayim/flight-path-radar</a>: a stealth plane flying over your contribution grid on a radar screen</li>
   <li><a href="https://github.com/maxhayim/cockpit-telemetry">maxhayim/cockpit-telemetry</a>: your GitHub stats on a glass cockpit</li>
   <li><a href="https://github.com/maxhayim/systems-console">maxhayim/systems-console</a>: your tech stack on an aircraft overhead panel</li>
-  <li><a href="https://github.com/jwenjian/visitor-badge">jwenjian/visitor-badge</a>: the live visitor counter badge</li>
+  <li><a href="https://github.com/jwenjian/visitor-badge">jwenjian/visitor-badge</a>: the visitor counter the snapshot odometer reads (and the live strip can start from)</li>
 </ul>
 
 <h2>Acknowledgments</h2>

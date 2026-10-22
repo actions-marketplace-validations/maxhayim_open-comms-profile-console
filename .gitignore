@@ -2,3 +2,5 @@
 node_modules/
 dist/
 out/
+worker/wrangler.local.toml
+.wrangler/
