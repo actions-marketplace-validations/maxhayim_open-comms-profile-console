@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="examples/open-comms.svg" alt="Open Comms Radio: your contact email on a cockpit comms radio" width="100%"/>
+  <img src="examples/open-comms.svg" alt="Open Comms Profile Console: your contact email on a cockpit comms panel" width="100%"/>
 </p>
 
 <p align="center">
-  <strong>Your contact details, on a comms radio</strong>
+  <strong>Your contact details, on a comms panel</strong>
 </p>
 
 <p align="center">
@@ -16,11 +16,11 @@
   <img src="https://img.shields.io/badge/Output-Animated%20SVG-lightgrey" alt="Output">
 </p>
 
-<h1>Open Comms Radio</h1>
+<h1>Open Comms Profile Console</h1>
 
-<p>Open Comms Radio is a GitHub Action that turns the contact section of your profile README into a cockpit comms radio. Your email comes up on the station display, the COM 1 readout tunes in to its frequency, a data burst scrolls across the scope and the transmit lamp keys in bursts. Below it, a message display shows a status line you write yourself, such as <code>SYSTEMS NOMINAL · READY FOR NEXT MISSION</code>.</p>
+<p>Open Comms Profile Console is a GitHub Action that turns the contact section of your profile README into a cockpit comms panel. Your email comes up on the station display, the COM 1 readout tunes in to its frequency, a data burst scrolls across the scope and the transmit lamp keys in bursts. Below it, a message display shows a status line you write yourself, such as <code>SYSTEMS NOMINAL · READY FOR NEXT MISSION</code>.</p>
 
-<p>The output is a single animated SVG with no JavaScript, so it plays inside a plain <code>&lt;img&gt;</code> tag on your GitHub profile README. Wrap it in a <code>mailto:</code> link and the whole radio becomes the push-to-talk button. It uses the same phosphor-green palette as its sister projects <a href="https://github.com/maxhayim/flight-path-radar">Flight Path Radar</a>, <a href="https://github.com/maxhayim/cockpit-telemetry">Cockpit Telemetry</a> and <a href="https://github.com/maxhayim/systems-console">Systems Console</a>.</p>
+<p>The output is a single animated SVG with no JavaScript, so it plays inside a plain <code>&lt;img&gt;</code> tag on your GitHub profile README. Wrap it in a <code>mailto:</code> link and the whole panel becomes the push-to-talk button. It uses the same phosphor-green palette as its sister projects <a href="https://github.com/maxhayim/flight-path-radar">Flight Path Radar</a>, <a href="https://github.com/maxhayim/cockpit-telemetry">Cockpit Telemetry</a> and <a href="https://github.com/maxhayim/systems-console">Systems Console</a>.</p>
 
 <h2>Features</h2>
 
@@ -30,8 +30,8 @@
   <li><strong>Your own status line:</strong> any message on the status display through the <code>status</code> input, with a blinking cursor and a GO lamp</li>
   <li><strong>Synced with GitHub:</strong> set <code>github_status: true</code> and the display shows the status you set on your GitHub profile; mark yourself busy and the lamp turns to amber BUSY</li>
   <li><strong>Clickable:</strong> wrap the image in a <code>mailto:</code> link and the push-to-talk plate tells visitors to click to transmit; the SVG has the same link built in for when it's opened on its own</li>
-  <li><strong>Two links:</strong> split it into the radio and the message panel with <code>?part=</code>, so the email opens a new message and the rest links to your project page</li>
-  <li><strong>Everything optional:</strong> turn off the email for a receive-only radio, or the visitor log, for the whole run or one output</li>
+  <li><strong>Two links:</strong> split it into the comms panel and the message panel with <code>?part=</code>, so the email opens a new message and the rest links to your project page</li>
+  <li><strong>Everything optional:</strong> turn off the email for a receive-only panel, or the visitor log, for the whole run or one output</li>
   <li><strong>Visitor log:</strong> an optional odometer of your visitor count inside the panel, counted by a hidden 1×1 pixel in your README (see <a href="#visitor-counter">Visitor Counter</a>)</li>
   <li><strong>Optional titles:</strong> hide the header and panel titles with <code>titles: false</code> when your README has its own heading (see the <a href="#gallery">Gallery</a>)</li>
   <li><strong>Zero dependencies:</strong> plain Node.js, nothing to install</li>
@@ -48,25 +48,25 @@
 
 <p>The default: a header with the <code>OPEN COMMS</code> title, your callsign and your name, and each panel's title and readout. This one shows the GitHub status (<code>github_status: true</code>) and the visitor log (<code>visitor_page_id: maxhayim.maxhayim</code>).</p>
 
-<p align="center"><img src="examples/open-comms.svg" alt="Open Comms Radio with titles" width="100%"/></p>
+<p align="center"><img src="examples/open-comms.svg" alt="Open Comms Profile Console with titles" width="100%"/></p>
 
 <h3 id="without-titles">Without titles</h3>
 
 <p>The header and the panel titles hidden. The panels move up to fill the space; the annunciator strip stays. Use <code>titles: false</code> or <code>?titles=false</code>. This one also has the visitor log: <code>visitor_page_id: maxhayim.maxhayim</code>.</p>
 
-<p align="center"><img src="examples/open-comms-no-titles.svg" alt="Open Comms Radio without titles" width="100%"/></p>
+<p align="center"><img src="examples/open-comms-no-titles.svg" alt="Open Comms Profile Console without titles" width="100%"/></p>
 
 <h3 id="custom-status">Custom status and frequency</h3>
 
 <p>Any message on the status display, and any frequency on the readout. Use <code>status: OPEN TO COLLABORATION · TRANSMIT ANY TIME</code> and <code>frequency: 121.5</code>.</p>
 
-<p align="center"><img src="examples/custom-status.svg" alt="Open Comms Radio with a custom status and frequency" width="100%"/></p>
+<p align="center"><img src="examples/custom-status.svg" alt="Open Comms Profile Console with a custom status and frequency" width="100%"/></p>
 
 <h3 id="receive-only">Receive only</h3>
 
 <p>No email: the station display listens, the transmitter goes dark and the push-to-talk plate reads RECEIVE ONLY. Leave <code>email</code> empty, set <code>email: false</code>, or add <code>?email=false</code> to one output. This one also has <code>visitor_log: false</code>.</p>
 
-<p align="center"><img src="examples/receive-only.svg" alt="Open Comms Radio as a receive-only radio" width="100%"/></p>
+<p align="center"><img src="examples/receive-only.svg" alt="Open Comms Profile Console as a receive-only panel" width="100%"/></p>
 
 <h2>Requirements</h2>
 
@@ -78,10 +78,10 @@
 
 <h2>Installation and Setup</h2>
 
-1. In your profile repository, create `.github/workflows/open-comms-radio.yml`:
+1. In your profile repository, create `.github/workflows/open-comms-profile-console.yml`:
 
    ```yaml
-   name: Open Comms Radio
+   name: Open Comms Profile Console
 
    on:
      schedule:
@@ -95,7 +95,7 @@
      build:
        runs-on: ubuntu-latest
        steps:
-         - uses: maxhayim/open-comms-radio@v1
+         - uses: maxhayim/open-comms-profile-console@v1
            with:
              github_user_name: ${{ github.repository_owner }}
              email: you@example.com
@@ -112,9 +112,9 @@
              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
    ```
 
-   Every line under `with:` except `github_user_name` is optional. Drop `visitor_page_id` (or set `visitor_log: false`) for no visitor log, and drop `email` for a receive-only radio.
+   Every line under `with:` except `github_user_name` is optional. Drop `visitor_page_id` (or set `visitor_log: false`) for no visitor log, and drop `email` for a receive-only panel.
 
-   If you already publish another SVG to the `output` branch (for example with Flight Path Radar, Cockpit Telemetry or Systems Console), add the Open Comms Radio step to that same job instead, so one publish step pushes them all.
+   If you already publish another SVG to the `output` branch (for example with Flight Path Radar, Cockpit Telemetry or Systems Console), add the Open Comms Profile Console step to that same job instead, so one publish step pushes them all.
 
 2. Run the workflow once from the **Actions** tab (**Run workflow**), or wait for the schedule.
 
@@ -122,7 +122,7 @@
 
    ```html
    <a href="mailto:you@example.com">
-     <img src="https://raw.githubusercontent.com/<you>/<you>/output/open-comms.svg" alt="Open Comms Radio: email me" width="100%">
+     <img src="https://raw.githubusercontent.com/<you>/<you>/output/open-comms.svg" alt="Open Comms Profile Console: email me" width="100%">
    </a>
    ```
 
@@ -132,20 +132,20 @@
 
 <h2 id="two-links">Two Links</h2>
 
-<p>A README image can carry only one link. To give the email its own link, draw the panel as two images and stack them: <code>?part=radio</code> draws the header and comms panel, <code>?part=status</code> draws the message panel and lamp strip. The corners where they meet are square, so they read as one console.</p>
+<p>A README image can carry only one link. To give the email its own link, draw the panel as two images and stack them: <code>?part=comms</code> draws the header and comms panel, <code>?part=status</code> draws the message panel and lamp strip. The corners where they meet are square, so they read as one console.</p>
 
-<p align="center"><img src="examples/open-comms-radio.svg" alt="Open Comms Radio: comms panel" width="100%"/><br><img src="examples/open-comms-status.svg" alt="Open Comms Radio: message panel" width="100%"/></p>
+<p align="center"><img src="examples/open-comms-contact.svg" alt="Open Comms Profile Console: comms panel" width="100%"/><br><img src="examples/open-comms-status.svg" alt="Open Comms Profile Console: message panel" width="100%"/></p>
 
 ```yaml
 outputs: |
-  dist/open-comms-radio.svg?part=radio&titles=false
+  dist/open-comms-contact.svg?part=comms&titles=false
   dist/open-comms-status.svg?part=status&titles=false
 ```
 
 ```html
 <p align="center">
-  <a href="mailto:you@example.com"><img src="https://raw.githubusercontent.com/<you>/<you>/output/open-comms-radio.svg" alt="Open Comms Radio: email me" width="100%"></a><br>
-  <a href="https://github.com/maxhayim/open-comms-radio"><img src="https://raw.githubusercontent.com/<you>/<you>/output/open-comms-status.svg" alt="Open Comms Radio status" width="100%"></a>
+  <a href="mailto:you@example.com"><img src="https://raw.githubusercontent.com/<you>/<you>/output/open-comms-contact.svg" alt="Open Comms Profile Console: email me" width="100%"></a><br>
+  <a href="https://github.com/maxhayim/open-comms-profile-console"><img src="https://raw.githubusercontent.com/<you>/<you>/output/open-comms-status.svg" alt="Open Comms Profile Console status" width="100%"></a>
 </p>
 ```
 
@@ -184,21 +184,21 @@ outputs: |
 <table>
   <tr><th>Input</th><th>Default</th><th>Description</th></tr>
   <tr><td><code>github_user_name</code></td><td>(required)</td><td>User whose callsign and name go in the header.</td></tr>
-  <tr><td><code>email</code></td><td>(none)</td><td>Email address shown on the station display. Empty or <code>false</code> for a receive-only radio.</td></tr>
+  <tr><td><code>email</code></td><td>(none)</td><td>Email address shown on the station display. Empty or <code>false</code> for a receive-only panel.</td></tr>
   <tr><td><code>status</code></td><td><code>SYSTEMS NOMINAL · READY FOR NEXT MISSION</code></td><td>Message shown on the status display. Shown in capitals.</td></tr>
   <tr><td><code>github_status</code></td><td><code>false</code></td><td>Set to <code>true</code> to show your GitHub profile status instead of <code>status</code> when you have one set.</td></tr>
   <tr><td><code>frequency</code></td><td><code>122.800</code></td><td>Active frequency on the COM 1 readout, in MHz.</td></tr>
   <tr><td><code>visitor_page_id</code></td><td>(none)</td><td>visitor-badge <code>page_id</code>. Adds a <code>VISITOR LOG</code> odometer with the count when the image was drawn.</td></tr>
   <tr><td><code>visitor_log</code></td><td><code>true</code></td><td>Set to <code>false</code> to hide the visitor log even when <code>visitor_page_id</code> is set.</td></tr>
-  <tr><td><code>outputs</code></td><td><code>dist/open-comms.svg</code></td><td>One file per line. Add <code>?titles=false</code>, <code>?email=false</code>, <code>?visitor_log=false</code> or <code>?part=radio</code> / <code>?part=status</code> to change that file; join them with <code>&amp;</code>.</td></tr>
+  <tr><td><code>outputs</code></td><td><code>dist/open-comms.svg</code></td><td>One file per line. Add <code>?titles=false</code>, <code>?email=false</code>, <code>?visitor_log=false</code> or <code>?part=comms</code> / <code>?part=status</code> to change that file; join them with <code>&amp;</code>.</td></tr>
   <tr><td><code>titles</code></td><td><code>true</code></td><td>Set to <code>false</code> to hide the header (title, callsign, name) and the panel titles.</td></tr>
   <tr><td><code>github_token</code></td><td><code>github.token</code></td><td>Token used to read your name and status from the GitHub API.</td></tr>
 </table>
 
 <h3>Running Locally</h3>
 
-<pre><code>git clone https://github.com/maxhayim/open-comms-radio.git
-cd open-comms-radio
+<pre><code>git clone https://github.com/maxhayim/open-comms-profile-console.git
+cd open-comms-profile-console
 export GITHUB_TOKEN=$(gh auth token)
 OPEN_COMMS_EMAIL=you@example.com node src/cli.mjs &lt;user&gt; out/open-comms.svg 'out/open-comms-no-titles.svg?titles=false'
 OPEN_COMMS_EMAIL=you@example.com OPEN_COMMS_GITHUB_STATUS=true OPEN_COMMS_VISITOR_PAGE_ID=&lt;user&gt;.&lt;user&gt; node src/cli.mjs &lt;user&gt; out/open-comms.svg

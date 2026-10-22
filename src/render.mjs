@@ -30,7 +30,7 @@ function panel(x, y, w, h, title) {
     (title == null ? "" : text(x + 12, y + 16, title, { size: 10, fill: T.dim, weight: 700, extra: ` letter-spacing="1.5"` }));
 }
 
-// Rotary knob with tick marks; the pointer swings while the radio tunes in, then rests at its own angle.
+// Rotary knob with tick marks; the pointer swings while the panel tunes in, then rests at its own angle.
 function knob(cx, cy, r, name, rest, sweep, begin) {
   const ticks = Array.from({ length: 9 }, (_, i) => {
     const a = (-135 + i * 33.75) * Math.PI / 180;
@@ -61,7 +61,7 @@ function frequency(s, x, y, w) {
 }
 
 // Station display: the email types itself out, then a block cursor blinks after it.
-// With the email off, the radio is receive-only and the display just listens.
+// With the email off, the panel is receive-only and the display just listens.
 function station(s, x, y, w) {
   if (!s.email) {
     return [label(x, y + 10, "STATION"), label(x + w, y + 10, "CH 01", "end"),
@@ -141,9 +141,9 @@ function comms(s, x, y, w, titles) {
     scope(x + 260, cy + 80, 476, 54));
   // The station display and transmitter are a mailto: link too, for when the SVG is opened on its own;
   // in a README the <img> can't follow it, so the README wraps the image in the same link.
-  const radio = station(s, x + 260, cy, 476) + "\n" + transmit(x + 756, cy, w - 772, !!s.email);
+  const contact = station(s, x + 260, cy, 476) + "\n" + transmit(x + 756, cy, w - 772, !!s.email);
   const href = s.email && esc(`mailto:${s.email}`);
-  out.push(s.email ? `<a href="${href}" xlink:href="${href}" target="_top"><title>Email ${esc(s.email)}</title>\n${radio}\n</a>` : radio);
+  out.push(s.email ? `<a href="${href}" xlink:href="${href}" target="_top"><title>Email ${esc(s.email)}</title>\n${contact}\n</a>` : contact);
   return out.join("\n");
 }
 
@@ -202,31 +202,31 @@ function annunciators(s, y) {
 }
 
 // titles: false drops the header (title, callsign and name) and the panel titles; the panels move up to fill the space.
-// email: false makes the radio receive-only; visitorLog: false swaps the visitor log for the ACK plate.
-// part: "radio" draws only the header and comms panel, "status" only the message panel and lamp strip. A README image
+// email: false makes the panel receive-only; visitorLog: false swaps the visitor log for the ACK plate.
+// part: "comms" draws only the header and comms panel, "status" only the message panel and lamp strip. A README image
 // can carry only one link, so the two parts can be stacked with a different link each (mailto: and your project page);
 // the corners where they meet are square so they read as one console.
 export function buildSvg(profile, { titles = true, email = true, visitorLog = true, part = "all" } = {}) {
   const s = { ...profile, email: email ? profile.email || null : null };
   if (!visitorLog) delete s.visitors;
-  const radio = part !== "status", stat = part !== "radio", SEAM = 6;
+  const top = part !== "status", stat = part !== "comms", SEAM = 6;
   const ch = titles ? COMMS_H : COMMS_H - TITLE_H, sh = titles ? STATUS_H : STATUS_H - TITLE_H;
-  const py = !radio ? SEAM : titles ? 56 : 12;
-  const sy = radio ? py + ch + GAP : py;
+  const py = !top ? SEAM : titles ? 56 : 12;
+  const sy = top ? py + ch + GAP : py;
   const H = stat ? sy + sh + GAP + 32 : py + ch + SEAM;
-  const header = !titles || !radio ? "" : [
+  const header = !titles || !top ? "" : [
     text(16, 34, "OPEN COMMS", { size: 18, weight: 700, extra: ` letter-spacing="3"` }),
     text(220, 34, `CALLSIGN ${s.login.toUpperCase()}`, { size: 11, fill: T.amber, extra: ` letter-spacing="1.5"` }),
     `<text x="${W - 16}" y="34" font-size="14" fill="${T.text}" text-anchor="end">${esc(s.name)}</text>`,
     `<line x1="16" y1="46" x2="${W - 16}" y2="46" stroke="${T.border}"/>`,
   ].join("\n");
-  const seam = part === "radio" ? `<rect y="${H - 10}" width="${W}" height="10" fill="${T.bg}"/>` : part === "status" ? `<rect width="${W}" height="10" fill="${T.bg}"/>` : "";
+  const seam = part === "comms" ? `<rect y="${H - 10}" width="${W}" height="10" fill="${T.bg}"/>` : part === "status" ? `<rect width="${W}" height="10" fill="${T.bg}"/>` : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${FONT}">
-<title>Open Comms Radio: ${esc(stat && !radio ? s.status : s.email || s.login)}</title>
+<title>Open Comms Profile Console: ${esc(stat && !top ? s.status : s.email || s.login)}</title>
 <defs><filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
 <rect width="${W}" height="${H}" rx="10" fill="${T.bg}"/>${seam}
 ${header}
-${radio ? comms(s, 16, py, W - 32, titles) : ""}
+${top ? comms(s, 16, py, W - 32, titles) : ""}
 ${stat ? status(s, 16, sy, W - 32, titles) : ""}
 ${stat ? annunciators(s, H - 32) : ""}
 </svg>`;

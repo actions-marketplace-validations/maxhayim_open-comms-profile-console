@@ -1,8 +1,8 @@
-name: Open Comms Radio
+name: Open Comms Profile Console
 description: Turn your contact email into an animated cockpit comms-radio SVG, with a status message, for your profile README.
 author: maxhayim
 branding:
-  icon: radio
+  icon: mail
   color: green
 
 inputs:
@@ -12,7 +12,7 @@ inputs:
   email:
     description: |
       Email address shown on the station display. Wrap the image in a mailto: link in your README so it can be clicked.
-      Leave it empty or set it to false for a receive-only radio with no email.
+      Leave it empty or set it to false for a receive-only panel with no email.
     required: false
     default: ""
   status:
@@ -42,7 +42,7 @@ inputs:
   outputs:
     description: |
       One output file per line. Add ?titles=false, ?email=false or ?visitor_log=false to change that file (join them with &).
-      Add ?part=radio or ?part=status to draw only the comms panel or only the message panel and lamp strip, so the two
+      Add ?part=comms or ?part=status to draw only the comms panel or only the message panel and lamp strip, so the two
       can be stacked in your README with a different link each.
       Example: dist/open-comms.svg?titles=false
     required: false
